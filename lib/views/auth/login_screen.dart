@@ -3,7 +3,6 @@ import 'package:chef_khawla/views/app_main_screen.dart';
 import 'package:chef_khawla/views/auth/signup_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
-
 import '../../services/auth_service.dart';
 
 class LoginScreen extends StatefulWidget {
