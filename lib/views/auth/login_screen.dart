@@ -3,7 +3,7 @@ import 'package:chef_khawla/views/app_main_screen.dart';
 import 'package:chef_khawla/views/auth/signup_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
-import '../../services/auth_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -22,21 +22,31 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _handleLogin() async {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _isLoading = true);
-    final success = await AuthService.signIn(
-      email: _emailController.text.trim(),
-      password: _passwordController.text,
-    );
-    setState(() => _isLoading = false);
-    if (!mounted) return;
-    if (success) {
+
+    try {
+      // ✅ تسجيل الدخول مع Firebase Auth
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+      );
+
+      if (!mounted) return;
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (_) => const AppMainScreen()),
         (route) => false,
       );
-    } else {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Invalid credentials')));
+    } on FirebaseAuthException catch (e) {
+      String message = "Login failed";
+      if (e.code == 'user-not-found') {
+        message = "No user found for this email.";
+      } else if (e.code == 'wrong-password') {
+        message = "Wrong password.";
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(message)),
+      );
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -47,15 +57,14 @@ class _LoginScreenState extends State<LoginScreen> {
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 28),
-          child:
-          Column(
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 children: [
-                  Text(
+                  const Text(
                     'Welcome back\nChef!',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.bold,
                       height: 1,
@@ -84,16 +93,16 @@ class _LoginScreenState extends State<LoginScreen> {
                       BoxShadow(
                         color: Colors.black.withOpacity(0.1),
                         blurRadius: 8,
-                        offset: Offset(0, 4),
+                        offset: const Offset(0, 4),
                       ),
                     ],
                   ),
-                  child: CircleAvatar(
-                    radius: 60,
+                  child: const CircleAvatar(
+                    radius: 50,
                     backgroundColor: Colors.white,
                     child: ClipOval(
-                      child: Image.asset(
-                        'assets/images/img.png',
+                      child: Image(
+                        image: AssetImage('assets/images/img.png'),
                         fit: BoxFit.cover,
                         width: 100,
                         height: 100,
@@ -102,8 +111,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
               ),
-
-
               const SizedBox(height: 24),
               Container(
                 padding: const EdgeInsets.all(16),
@@ -135,8 +142,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       TextFormField(
                         controller: _emailController,
                         decoration: InputDecoration(
-                          labelText: 'Phone Number',
-                          prefixIcon: const Icon(Iconsax.call),
+                          labelText: 'Email',
+                          prefixIcon: const Icon(Iconsax.sms),
                           filled: true,
                           fillColor: Colors.white,
                           border: OutlineInputBorder(
@@ -146,10 +153,10 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         validator: (value) {
                           if (value == null || value.trim().isEmpty) {
-                            return 'Phone Number is required';
+                            return 'Email is required';
                           }
                           if (!value.contains('@')) {
-                            return 'Enter a valid Phone Number';
+                            return 'Enter a valid email';
                           }
                           return null;
                         },

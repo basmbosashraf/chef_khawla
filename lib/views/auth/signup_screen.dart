@@ -2,8 +2,7 @@ import 'package:chef_khawla/utils/constants.dart';
 import 'package:chef_khawla/views/app_main_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
-
-import '../../services/auth_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -23,22 +22,37 @@ class _SignUpScreenState extends State<SignUpScreen> {
   Future<void> _handleSignUp() async {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _isLoading = true);
-    final success = await AuthService.signUp(
-      name: _nameController.text.trim(),
-      email: _emailController.text.trim(),
-      password: _passwordController.text,
-    );
-    setState(() => _isLoading = false);
-    if (!mounted) return;
-    if (success) {
+
+    try {
+      // ✅ إنشاء الحساب باستخدام Firebase
+      final credential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+      );
+
+      // ✅ تحديث اسم المستخدم (displayName)
+      await credential.user!.updateDisplayName(_nameController.text.trim());
+
+      if (!mounted) return;
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (_) => const AppMainScreen()),
         (route) => false,
       );
-    } else {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Sign up failed')));
+    } on FirebaseAuthException catch (e) {
+      String message = "Sign up failed";
+      if (e.code == 'email-already-in-use') {
+        message = "This email is already in use.";
+      } else if (e.code == 'invalid-email') {
+        message = "Invalid email format.";
+      } else if (e.code == 'weak-password') {
+        message = "Password should be at least 6 characters.";
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(message)),
+      );
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -49,8 +63,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
-          child:
-          Column(
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const SizedBox(height: 30),
@@ -85,11 +98,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
               const SizedBox(height: 20),
 
-              /// العنوان تحت اللوجو
-              Text(
+              /// العنوان
+              const Text(
                 'Create your\naccount',
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 32,
                   fontWeight: FontWeight.bold,
                   height: 1.2,
@@ -150,12 +163,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ),
                       const SizedBox(height: 12),
 
-                      /// Phone
+                      /// Email
                       TextFormField(
                         controller: _emailController,
                         decoration: InputDecoration(
-                          labelText: 'Phone Number',
-                          prefixIcon: const Icon(Iconsax.call),
+                          labelText: 'Email',
+                          prefixIcon: const Icon(Iconsax.sms),
                           filled: true,
                           fillColor: Colors.white,
                           border: OutlineInputBorder(
@@ -165,7 +178,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         ),
                         validator: (value) {
                           if (value == null || value.trim().isEmpty) {
-                            return 'Phone Number is required';
+                            return 'Email is required';
+                          }
+                          if (!value.contains('@')) {
+                            return 'Enter a valid email';
                           }
                           return null;
                         },
@@ -186,7 +202,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               });
                             },
                             icon: Icon(
-                              _isPasswordVisible ? Iconsax.eye_slash : Iconsax.eye,
+                              _isPasswordVisible
+                                  ? Iconsax.eye_slash
+                                  : Iconsax.eye,
                             ),
                           ),
                           filled: true,
@@ -223,16 +241,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           onPressed: _isLoading ? null : _handleSignUp,
                           child: _isLoading
                               ? const SizedBox(
-                            width: 18,
-                            height: 18,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                            ),
-                          )
+                                  width: 18,
+                                  height: 18,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
+                                )
                               : const Text(
-                            'Create account',
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
+                                  'Create account',
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
                         ),
                       ),
                     ],
@@ -240,9 +258,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ),
               ),
             ],
-          )
-
-
+          ),
         ),
       ),
     );

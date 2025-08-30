@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import '../models/product.dart';
 import '../services/favorites_service.dart';
-
+/*
 class ProductCard extends StatefulWidget {
   final Product product;
   final VoidCallback? onTap;
@@ -206,6 +206,64 @@ class _ProductCardState extends State<ProductCard> {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+*/
+
+import 'package:flutter/material.dart';
+import 'package:chef_khawla/models/product.dart';
+
+class ProductCard extends StatefulWidget {
+  final Product product;
+  final bool isFavorite;
+  final VoidCallback onFavoriteTap;
+
+  const ProductCard({
+    super.key,
+    required this.product,
+    required this.isFavorite,
+    required this.onFavoriteTap,
+  });
+
+  @override
+  _ProductCardState createState() => _ProductCardState();
+}
+
+class _ProductCardState extends State<ProductCard> {
+  late bool isFavorite; // تخزين قيمة isFavorite محليًا
+
+  @override
+  void initState() {
+    super.initState();
+    isFavorite = widget.isFavorite; // تعيين القيمة الأولية من widget
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 4,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Image.network(widget.product.imageUrl, height: 100, width: 100),
+          SizedBox(height: 8),
+          Text(widget.product.name),
+          Text('\$${widget.product.price.toStringAsFixed(2)}'),
+          IconButton(
+            icon: Icon(
+              isFavorite ? Icons.favorite : Icons.favorite_border,
+              color: isFavorite ? Colors.red : Colors.grey,
+            ),
+            onPressed: () {
+              setState(() {
+                isFavorite = !isFavorite; // تحديث القيمة عند الضغط
+              });
+              widget.onFavoriteTap(); // استدعاء دالة onFavoriteTap
+            },
+          ),
+        ],
       ),
     );
   }

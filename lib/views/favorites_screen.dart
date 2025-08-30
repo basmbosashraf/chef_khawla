@@ -3,7 +3,9 @@ import '../models/product.dart';
 import '../services/favorites_service.dart';
 import '../utils/constants.dart';
 import '../widget/product_card.dart';
+import 'package:chef_khawla/models/category.dart';
 
+/*
 class FavoritesScreen extends StatefulWidget {
   const FavoritesScreen({super.key});
 
@@ -151,6 +153,59 @@ class _FavoritesScreenState extends State<FavoritesScreen>
           ],
         ),
       ),
+    );
+  }
+}
+*/
+
+class FavoritesScreen extends StatefulWidget {
+  final List<Product> favoriteProducts;
+
+  const FavoritesScreen({super.key, required this.favoriteProducts});
+
+  @override
+  _FavoritesScreenState createState() => _FavoritesScreenState();
+}
+
+class _FavoritesScreenState extends State<FavoritesScreen> {
+  late List<Product> favoriteProducts;
+
+  @override
+  void initState() {
+    super.initState();
+    favoriteProducts = widget.favoriteProducts; // استخدام البيانات التي تم تمريرها
+  }
+
+  // تحديث حالة الـ "favorite" عندما يتم الضغط
+  void toggleFavorite(Product product) {
+    setState(() {
+      product.isFavorite = !product.isFavorite;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Favorites')),
+      body: favoriteProducts.isEmpty
+          ? const Center(child: Text('No favorites yet'))
+          : GridView.builder(
+              padding: const EdgeInsets.all(10),
+              itemCount: favoriteProducts.length,
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                mainAxisSpacing: 10,
+                crossAxisSpacing: 10,
+              ),
+              itemBuilder: (context, index) {
+                final product = favoriteProducts[index];
+                return ProductCard(
+                  product: product,
+                  isFavorite: product.isFavorite,
+                  onFavoriteTap: () => toggleFavorite(product),
+                );
+              },
+            ),
     );
   }
 }

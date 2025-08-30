@@ -37,6 +37,13 @@ dependencies:
   iconsax: ^0.0.8
   http: ^1.1.0
   shared_preferences: ^2.2.2
+  firebase_core: ^4.0.0
+  firebase_auth: ^6.0.1
+  cloud_firestore: ^6.0.0
+  geolocator: ^9.0.2
+  geocoding: ^2.0.5
+  flutter_nfc_kit: ^3.6.0
+  nfc_manager: ^4.0.2
 
 dev_dependencies:
   flutter_test:

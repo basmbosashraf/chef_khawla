@@ -1,46 +1,39 @@
 class Product {
-  final int id;
+  final String id;
   final String name;
-  final String image;
-  final int calories;
-  final int cookTimeMinutes;
-  final double rating;
-  final int reviewCount;
-  final bool isFavorite;
+  final String imageUrl;
+  final double price;
+  final String categoryId;
+  bool isFavorite;  
 
   Product({
     required this.id,
     required this.name,
-    required this.image,
-    required this.calories,
-    required this.cookTimeMinutes,
-    this.rating = 0.0,
-    this.reviewCount = 0,
-    this.isFavorite = false,
+    required this.imageUrl,
+    required this.price,
+    required this.categoryId,
+    this.isFavorite = false, 
   });
 
+  // دالة من JSON
   factory Product.fromJson(Map<String, dynamic> json) {
     return Product(
-      id: json['id'] ?? 0,
-      name: json['name'] ?? '',
-      image: json['image'] ?? '',
-      calories: json['caloriesPerServing'] ?? 0,
-      cookTimeMinutes: json['cookTimeMinutes'] ?? 0,
-      rating: (json['rating'] ?? 0.0).toDouble(),
-      reviewCount: json['reviewCount'] ?? 0,
+      id: json['id'],
+      name: json['name'],
+      imageUrl: json['imageUrl'],
+      price: json['price'].toDouble(),
+      categoryId: json['categoryId'],
     );
   }
 
+  // دالة لتحويل الكائن إلى JSON
   Map<String, dynamic> toJson() {
     return {
       'id': id,
       'name': name,
-      'image': image,
-      'caloriesPerServing': calories,
-      'cookTimeMinutes': cookTimeMinutes,
-      'rating': rating,
-      'reviewCount': reviewCount,
-      'isFavorite': isFavorite,
+      'imageUrl': imageUrl,
+      'price': price,
+      'categoryId': categoryId,
     };
   }
 }

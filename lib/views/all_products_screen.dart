@@ -1,10 +1,14 @@
+
+
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import '../models/product.dart';
 import '../services/product_service.dart';
 import '../utils/constants.dart';
 import '../widget/product_card.dart';
+import 'package:chef_khawla/models/category.dart';
 
+/*
 class AllProductsScreen extends StatefulWidget {
   const AllProductsScreen({super.key});
 
@@ -158,6 +162,76 @@ class _AllProductsScreenState extends State<AllProductsScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+*/
+
+import 'package:chef_khawla/models/product.dart';
+import 'package:chef_khawla/services/product_service.dart';
+import 'package:chef_khawla/widget/product_card.dart';
+
+class AllProductsScreen extends StatefulWidget {
+  final String categoryId;
+  final bool isFavorite;
+
+  const AllProductsScreen({super.key, required this.categoryId, required this.isFavorite});
+
+  @override
+  _AllProductsScreenState createState() => _AllProductsScreenState();
+}
+
+class _AllProductsScreenState extends State<AllProductsScreen> {
+  late bool isFavorite;
+
+  @override
+  void initState() {
+    super.initState();
+    isFavorite = widget.isFavorite;  // تعيين قيمة الـ isFavorite
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Products in Category'),
+      ),
+      body: FutureBuilder<List<Product>>(
+        future: ProductService.getProductsByCategory(widget.categoryId),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return const Center(child: Text('No products found'));
+          }
+
+          final products = snapshot.data!;
+
+          return GridView.builder(
+            padding: const EdgeInsets.all(10),
+            itemCount: products.length,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              mainAxisSpacing: 10,
+              crossAxisSpacing: 10,
+            ),
+            itemBuilder: (context, index) {
+              final product = products[index];
+              return ProductCard(
+                product: product,
+                isFavorite: product.isFavorite,  // إرسال قيمة isFavorite لكل منتج
+                onFavoriteTap: () {
+                  setState(() {
+                    product.isFavorite = !product.isFavorite;  // تغيير حالة isFavorite عند النقر
+                  });
+                },
+              );
+            },
+          );
+        },
       ),
     );
   }

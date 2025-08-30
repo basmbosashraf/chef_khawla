@@ -1,3 +1,23 @@
+
+
+
+
+
+
+
+buildscript {
+    val kotlin_version by extra("2.1.0") // قم بتحديثها إلى النسخة المناسبة
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath("com.android.tools.build:gradle:7.3.1")  // تأكد من تحديث نسخة Gradle Plugin
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version")  // تحديث Kotlin Gradle Plugin
+    }
+}
+
+
 allprojects {
     repositories {
         google()

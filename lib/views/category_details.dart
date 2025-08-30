@@ -2,6 +2,7 @@ import 'package:chef_khawla/views/product_details_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 
+
 class CategoryDetailScreen extends StatefulWidget {
   final String categoryName;
 

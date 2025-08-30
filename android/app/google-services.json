@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "379884733024",
+    "project_id": "chef-khawla-f1563",
+    "storage_bucket": "chef-khawla-f1563.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:379884733024:android:c1a3e56ded048693573905",
+        "android_client_info": {
+          "package_name": "com.example.chef_khawla"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCHuAXR2VEw80hjoFx95qt_50rwRexfiI4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

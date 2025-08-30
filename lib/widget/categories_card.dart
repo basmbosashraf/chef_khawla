@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 
 import '../views/category_details.dart';
 
+
+
+
+import 'package:chef_khawla/models/category.dart'; 
+/*
 class CategoriesSection extends StatelessWidget {
   const CategoriesSection({super.key});
 
@@ -11,11 +16,11 @@ class CategoriesSection extends StatelessWidget {
 
     final items = <_CategoryItem>[
       _CategoryItem(label: 'Cake Flavors', image: 'assets/images/img_1.png'),
-      _CategoryItem(label: 'Healthy Options', image: 'assets/images/img_2.png'),
-      _CategoryItem(label: 'My Products', image: 'assets/images/whisk.png'),
-      _CategoryItem(label: 'Merchandise Shop', image: 'assets/images/mug.png'),
-      _CategoryItem(label: 'My Products', image: 'assets/images/spatula.png'),
-      _CategoryItem(label: 'Occasion Packs', image: 'assets/images/gift.png'),
+      _CategoryItem(label: 'Healthy Options', image: 'assets/images/img_1.png'),
+      _CategoryItem(label: 'My Products', image: 'assets/images/img_1.png'),
+      _CategoryItem(label: 'Merchandise Shop', image: 'assets/images/img_1.png'),
+      _CategoryItem(label: 'My Products', image: 'assets/images/img_1.png'),
+      _CategoryItem(label: 'Occasion Packs', image: 'assets/images/img_1.png'),
     ];
 
     return GridView.builder(
@@ -85,7 +90,10 @@ class _CategoryCard extends StatelessWidget {
           SizedBox(
             width: circleSize,
             height: circleSize,
-            child: Image.asset(imagePath),
+            child: Image.asset(imagePath,
+              height: 60,
+              width: 60
+            ),
           ),
           const SizedBox(height: 10),
           Text(
@@ -104,3 +112,42 @@ class _CategoryCard extends StatelessWidget {
 }
 
 
+*/
+
+
+
+
+class CategoryCard extends StatefulWidget {
+  final Category category;
+
+  const CategoryCard({super.key, required this.category});
+
+  @override
+  _CategoryCardState createState() => _CategoryCardState();
+}
+
+class _CategoryCardState extends State<CategoryCard> {
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Image.network(
+            widget.category.imageUrl,
+            height: 80,
+            width: 80,
+            fit: BoxFit.cover,
+          ),
+          SizedBox(height: 8),
+          Text(
+            widget.category.name,
+            // style: Theme.of(context).textTheme.bodyText2?.copyWith(fontWeight: FontWeight.bold),
+          ),
+        ],
+      ),
+    );
+  }
+}

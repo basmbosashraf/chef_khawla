@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:chef_khawla/models/category.dart';
 import 'package:iconsax/iconsax.dart';
 
 class ProductDetailScreen extends StatelessWidget {
@@ -22,7 +23,7 @@ class ProductDetailScreen extends StatelessWidget {
           Container(
             decoration: const BoxDecoration(
               image: DecorationImage(
-                image: AssetImage("assets/images/img_3.png"), // نفس الباكجراوند
+                image: AssetImage("assets/images/img_3.png"),
                 fit: BoxFit.cover,
               ),
             ),

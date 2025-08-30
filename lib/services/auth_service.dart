@@ -1,54 +1,47 @@
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class AuthService {
-  static const String _keyIsLoggedIn = 'auth_is_logged_in';
-  static const String _keyUserEmail = 'auth_user_email';
-  static const String _keyUserName = 'auth_user_name';
+  static final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  static Future<bool> isLoggedIn() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getBool(_keyIsLoggedIn) ?? false;
+  /// تسجيل حساب جديد
+  static Future<bool> signUp({
+    required String email,
+    required String password,
+  }) async {
+    try {
+      await _auth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      return true;
+    } catch (e) {
+      print("Signup error: $e");
+      return false;
+    }
   }
 
-  static Future<String?> getUserEmail() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_keyUserEmail);
-  }
-
-  static Future<String?> getUserName() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_keyUserName);
-  }
-
-  // Mock sign in. In a real app, call your backend here.
+  /// تسجيل الدخول
   static Future<bool> signIn({
     required String email,
     required String password,
   }) async {
-    if (email.isEmpty || password.isEmpty) return false;
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(_keyIsLoggedIn, true);
-    await prefs.setString(_keyUserEmail, email);
-    return true;
-  }
-
-  static Future<bool> signUp({
-    required String name,
-    required String email,
-    required String password,
-  }) async {
-    if (name.isEmpty || email.isEmpty || password.isEmpty) return false;
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(_keyIsLoggedIn, true);
-    await prefs.setString(_keyUserEmail, email);
-    await prefs.setString(_keyUserName, name);
-    return true;
+    try {
+      await _auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      return true;
+    } catch (e) {
+      print("Login error: $e");
+      return false;
+    }
   }
 
   static Future<void> signOut() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(_keyIsLoggedIn, false);
-    await prefs.remove(_keyUserEmail);
-    await prefs.remove(_keyUserName);
+    await _auth.signOut();
+  }
+
+ static bool isLoggedIn() {
+    return _auth.currentUser != null;
   }
 }

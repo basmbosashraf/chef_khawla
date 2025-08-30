@@ -2,21 +2,21 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/category.dart';
 
+import '../models/category.dart';
+
 class CategoryService {
-  static const String baseUrl = 'https://dummyjson.com/recipes';
-
+  // استبدل هذا بـ بياناتك المحلية مباشرة
   static Future<List<Category>> getCategories() async {
-    try {
-      final response = await http.get(Uri.parse('$baseUrl/tags'));
+    // بيانات ثابتة محليًا بدلاً من تحميلها من API
+    await Future.delayed(Duration(seconds: 2)); // محاكاة التأخير في تحميل البيانات
 
-      if (response.statusCode == 200) {
-        final List<dynamic> jsonData = json.decode(response.body);
-        return jsonData.map((json) => Category.fromJson(json)).toList();
-      } else {
-        throw Exception('Failed to load categories: ${response.statusCode}');
-      }
-    } catch (e) {
-      throw Exception('Failed to load categories: $e');
-    }
+    List<Map<String, dynamic>> mockData = [
+      {"id": "1", "name": "Pizza", "imageUrl": "url_to_image_1"},
+      {"id": "2", "name": "Cake", "imageUrl": "url_to_image_2"},
+      {"id": "3", "name": "Beverages", "imageUrl": "url_to_image_3"},
+    ];
+
+    // تحويل البيانات من Map إلى كائنات Category
+    return mockData.map((categoryJson) => Category.fromJson(categoryJson)).toList();
   }
 }
